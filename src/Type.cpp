@@ -677,19 +677,14 @@ eSimpleType
 Type::choose_random_nonvoid_simple(void)
 {
 	eSimpleType simple_type;
-#if 0
-	vector<unsigned int> vs;
-	vs.push_back(eVoid);
 
-	if (!CGOptions::allow_int64()) {
-		vs.push_back(eLongLong);
-		vs.push_back(eULongLong);
-	}
-
-	VectorFilter filter(vs);
-#endif
-
-	simple_type = (eSimpleType) rnd_upto(MAX_SIMPLE_TYPES, SIMPLE_TYPES_PROB_FILTER);
+	// 只选择eBPF支持的类型
+	do {
+		simple_type = (eSimpleType) rnd_upto(MAX_SIMPLE_TYPES, SIMPLE_TYPES_PROB_FILTER);
+	} while (simple_type == eVoid || 
+	         simple_type == eFloat || 
+	         simple_type == eInt128 || 
+	         simple_type == eUInt128);
 
 	return simple_type;
 }
@@ -1238,9 +1233,16 @@ void
 Type::GenerateSimpleTypes(void)
 {
     unsigned int st;
+    // 只生成eBPF支持的类型，跳过浮点数和128位整数
     for (st=eChar; st<MAX_SIMPLE_TYPES; st++)
     {
-		AllTypes.push_back(new Type((enum eSimpleType)st));
+        // 跳过不支持的类型：eFloat, eInt128, eUInt128
+        if ((enum eSimpleType)st == eFloat || 
+            (enum eSimpleType)st == eInt128 || 
+            (enum eSimpleType)st == eUInt128) {
+            continue;
+        }
+        AllTypes.push_back(new Type((enum eSimpleType)st));
     }
     Type::void_type = new Type((enum eSimpleType)eVoid);
 }
@@ -1869,14 +1871,15 @@ void OutputUnionAssignOps(Type* type, std::ostream &out, bool vol)
 			out << "            return *this;"; really_outputln(out);
 			out << "        }"; really_outputln(out);
 
-
-			out << "        memcpy((";
-			type->Output(out);
-			out << "*)this, (const ";
-			type->Output(out);
-			out << "*)(&val), sizeof(";
-			type->Output(out);
-			out << ")); "; really_outputln(out);
+			// 禁用memcpy，使用逐个字段赋值的方式
+			for (size_t i = 0, j = 0; i<type->fields.size(); i++) {
+				int length = type->bitfields_length_[i];
+				if (length != 0){
+					out << "        ";
+					out << " f" << j << "= val.f" << j << ";"; really_outputln(out);
+					++j;
+				}
+			}
 
 			out << "        return *this;"; really_outputln(out);
 			out << "    }"; really_outputln(out);

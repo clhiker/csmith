@@ -42,3 +42,13 @@ platform.info
 
 # Files made by Csmith-generated programs.
 vol_addr.txt
+build/runtime/safe_math_macros_notmp.h
+build/runtime/safe_math_macros.h
+build/runtime/safe_math.h
+build/src/csmith
+build/src/git_version.cpp
+seeds/test0.c
+seeds/test1.c
+seeds/test2.c
+seeds/test3.c
+seeds/test4.c

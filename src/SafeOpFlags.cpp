@@ -195,15 +195,26 @@ SafeOpFlags::make_random_binary(const Type *rv_type, const Type *op1_type, const
 		flags->op1_ = true;
 	}
 	else {
-		flags->op1_ = rnd_flipcoin(SafeOpsSignedProb);
+		// 对于除法和模运算，强制使用无符号类型
+		if (bop == eDiv || bop == eMod) {
+			flags->op1_ = false;
+		} else {
+			flags->op1_ = rnd_flipcoin(SafeOpsSignedProb);
+		}
 	}
 	ERROR_GUARD_AND_DEL1(NULL, flags);
 
 	if (op_kind == sOpBinary) {
 		if (rv_is_float)
 			flags->op2_ = true;
-		else
-			flags->op2_ = rnd_flipcoin(SafeOpsSignedProb);
+		else {
+			// 对于除法和模运算，强制使用无符号类型
+			if (bop == eDiv || bop == eMod) {
+				flags->op2_ = false;
+			} else {
+				flags->op2_ = rnd_flipcoin(SafeOpsSignedProb);
+			}
+		}
 		ERROR_GUARD_AND_DEL1(NULL, flags);
 	}
 	else {

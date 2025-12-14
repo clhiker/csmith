@@ -126,7 +126,7 @@ void
 ExtensionMgr::OutputTail(ostream &out)
 {
 	if (ExtensionMgr::extension_ == NULL) {
-		out << "    return 0;" << endl;
+		out << "    return XDP_DROP;" << endl;
 	}
 	else {
 		ExtensionMgr::extension_->OutputTail(out);
@@ -137,12 +137,8 @@ void
 ExtensionMgr::OutputInit(std::ostream &out)
 {
 	if (ExtensionMgr::extension_ == NULL) {
-		if (CGOptions::accept_argc()) {
-			out << "int main (int argc, char* argv[])" << endl;
-		}
-		else {
-			out << "int main (void)" << endl;
-		}
+		out << "SEC(\"xdp\")" << endl;
+		out << "int xdp_prog(struct xdp_md *ctx)" << endl;
 		out << "{" << endl;
 	}
 	else {

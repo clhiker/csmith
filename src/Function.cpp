@@ -261,14 +261,21 @@ RandomFunctionName(void)
 }
 
 /*-------------------------------------------------------------
- *  choose a random return type. only struct/unions and integer types
- *  (not incl. void)  are qualified, (no arrays)
+ *  choose a random return type. only scalar types (int, long long, u64, pointers, etc.)
+ *  are allowed,禁止 struct/union 作为返回值
  *************************************************************/
 static const Type*
 RandomReturnType(void)
 {
 	const Type* t = 0;
-        t = Type::choose_random();
+	// 只返回标量类型，禁止 struct/union
+	while (1) {
+		t = Type::choose_random();
+		// 允许简单类型（除了 void）和指针类型
+		if ((t->eType == eSimple && t->simple_type != eVoid) || t->eType == ePointer) {
+			break;
+		}
+	}
 	return t;
 }
 
