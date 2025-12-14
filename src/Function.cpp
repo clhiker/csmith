@@ -261,7 +261,8 @@ RandomFunctionName(void)
 }
 
 /*-------------------------------------------------------------
- *  choose a random return type. only scalar types (int, long long, u64, pointers, etc.)
+ *  choose a random return type. only scalar types
+ *  (int, long long, u64, pointers, etc.)
  *  are allowed,禁止 struct/union 作为返回值
  *************************************************************/
 static const Type*

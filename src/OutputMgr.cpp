@@ -126,8 +126,24 @@ OutputMgr::OutputMain(std::ostream &out)
 		}
 	}
 	else {
+		// set up a global variable that controls if we print the hash value after computing it for each global
+		out << "    int print_hash_value = 0;" << endl;
+		if (CGOptions::accept_argc()) {
+			out << "    if (argc == 2 && strcmp(argv[1], \"1\") == 0) print_hash_value = 1;" << endl;
+		}
+		// 注释掉platform_main_begin，因为eBPF程序没有main函数
+		// out << "    platform_main_begin();" << endl;
+		if (CGOptions::compute_hash()) {
+			out << "    crc32_gentab();" << endl;
+		}
+
 		ExtensionMgr::OutputFirstFunInvocation(out, invoke);
 
+	#if 0
+		out << "    ";
+		invoke->Output(out);
+		out << ";" << endl;
+	#endif
 		// resetting all global dangling pointer to null per Rohit's request
 		if (!CGOptions::dangling_global_ptrs()) {
 			OutputPtrResets(out, GetFirstFunction()->dead_globals);
@@ -137,6 +153,12 @@ OutputMgr::OutputMain(std::ostream &out)
 			OutputMgr::OutputHashFuncInvocation(out, 1);
 		else
 			HashGlobalVariables(out);
+		if (CGOptions::compute_hash()) {
+			out << "    platform_main_end(crc32_context ^ 0xFFFFFFFFUL, print_hash_value);" << endl;
+		} else {
+			// 注释掉platform_main_end，因为eBPF程序没有main函数
+			// out << "    platform_main_end(0,0);" << endl;
+		}
 	}
 	ExtensionMgr::OutputTail(out);
 	out << "}" << endl;

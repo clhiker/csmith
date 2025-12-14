@@ -12,7 +12,8 @@ for seed in range(5):
     if not os.path.exists(csmith_path):
         print(f"Error: csmith executable not found at {csmith_path}!")
         sys.exit(1)
-    cmd = f"{csmith_path} --seed {seed} --no-checksum > seeds/test{seed}.c"
+    # cmd = f"{csmith_path} --seed {seed} --no-checksum > seeds/test{seed}.c"
+    cmd = f"{csmith_path} --no-checksum --no-argc > seeds/test{seed}.c"
     os.system(cmd)
 
 print("Generation complete!")
