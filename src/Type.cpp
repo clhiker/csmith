@@ -1764,9 +1764,8 @@ Type::Output(std::ostream &out) const
 		} else if (this->simple_type == eUInt128) {
 			out << "unsigned __int" << (SizeInBytes() * 8);
 		} else {
-			out << (is_signed() ? "int" : "uint");
+			out << (is_signed() ? "__s" : "__u");
 			out << (SizeInBytes() * 8);
-			out << "_t";
 		}
 		break;
 	case ePointer:   ptr_type->Output( out ); out << "*"; break;

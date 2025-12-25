@@ -4,7 +4,7 @@ import sys
 # 创建seeds目录（如果不存在）
 os.makedirs("seeds", exist_ok=True)
 os.system('cd build && make -j8')
-for seed in range(5):
+for seed in range(15):
     print(f"Generating test case with seed {seed}...")
     # 添加--no-checksum选项，屏蔽transparent_crc函数，但保留main函数生成（我们已经修改了main函数为eBPF入口）
     # 动态确定csmith可执行文件路径
@@ -13,7 +13,9 @@ for seed in range(5):
         print(f"Error: csmith executable not found at {csmith_path}!")
         sys.exit(1)
     # cmd = f"{csmith_path} --seed {seed} --no-checksum > seeds/test{seed}.c"
-    cmd = f"{csmith_path} --no-checksum --no-argc > seeds/test{seed}.c"
+    cmd = f"{csmith_path} --no-checksum --no-argc --no-global-variables --no-safe-math --max-funcs 3 --max-block-depth 3 --max-expr-complexity 3 --max-block-size 3 > seeds/test{seed}.c"
+    if os.path.exists(f"seeds/test{seed}.o"):
+        os.remove(f"seeds/test{seed}.o")
     os.system(cmd)
 
 print("Generation complete!")

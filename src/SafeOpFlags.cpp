@@ -244,27 +244,26 @@ SafeOpFlags::clone() const
 void
 SafeOpFlags::OutputSize(std::ostream &out) const
 {
-	if(!op1_)
-		out << "u";
+	out << (op1_ ? "__s" : "__u");
 
 	switch(op_size_) {
 	case sInt8:
-		out << "int8_t";
+		out << "8";
 		break;
 	case sInt16:
-		out << "int16_t";
+		out << "16";
 		break;
 	case sInt32:
-		out << "int32_t";
+		out << "32";
 		break;
 	case sInt64:
-		out << "int64_t";
+		out << "64";
 		break;
 	case sFloat:
 		out << "float";
 		break;
 	default:
-		assert(!"invalid size!");
+		assert("invalid size!");
 		break;
 	}
 }

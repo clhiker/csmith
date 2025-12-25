@@ -25,7 +25,7 @@ CSMITH_HOME="/home/clhiker/bpf/csmith"
 
 # 设置编译选项
 CC="clang"
-CFLAGS="-I${CSMITH_HOME}/runtime -I${CSMITH_HOME}/build/runtime -O2 -w -target bpf"
+CFLAGS="-I${CSMITH_HOME}/runtime -I${CSMITH_HOME}/build/runtime -O2 -g -w -target bpf"
 
 # 编译eBPF目标文件
 OUTPUT_FILE="${DIRNAME}/${FILENAME}.o"

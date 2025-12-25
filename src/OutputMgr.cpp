@@ -285,16 +285,16 @@ OutputMgr::OutputHeader(int argc, char *argv[], unsigned long seed)
 		out << endl;
 	}
 
-	// 输出eBPF相关头文件
-	out << "#include <linux/bpf.h>" << endl;
-	out << "#include <bpf/bpf_helpers.h>" << endl;
-	out << endl;
+	// // 输出eBPF相关头文件
+	// out << "#include <linux/bpf.h>" << endl;
+	// out << "#include <bpf/bpf_helpers.h>" << endl;
+	// out << endl;
 	
-	// 定义SEC宏（如果未定义）
-	out << "#ifndef SEC" << endl;
-	out << "#define SEC(NAME) __attribute__((section(NAME), used))" << endl;
-	out << "#endif" << endl;
-	out << endl;
+	// // 定义SEC宏（如果未定义）
+	// out << "#ifndef SEC" << endl;
+	// out << "#define SEC(NAME) __attribute__((section(NAME), used))" << endl;
+	// out << "#endif" << endl;
+	// out << endl;
 
 	if (!CGOptions::longlong()) {
 		out << endl;
@@ -307,14 +307,15 @@ OutputMgr::OutputHeader(int argc, char *argv[], unsigned long seed)
 	}
 
 	ExtensionMgr::OutputHeader(out);
-
-	out << runtime_include << endl;
+	
+	// csmith.h 头文件
+	// out << runtime_include << endl;
 
  	if (!CGOptions::compute_hash()) {
 		if (CGOptions::allow_int64())
-			out << "volatile uint64_t " << Variable::sink_var_name << " = 0;" << endl;
+			out << "volatile __u64 " << Variable::sink_var_name << " = 0;" << endl;
 		else
-			out << "volatile uint32_t " << Variable::sink_var_name << " = 0;" << endl;
+			out << "volatile __u32 " << Variable::sink_var_name << " = 0;" << endl;
 	}
 	out << endl;
 
@@ -324,7 +325,7 @@ OutputMgr::OutputHeader(int argc, char *argv[], unsigned long seed)
 	if (CGOptions::depth_protect()) {
 		out << "#define MAX_DEPTH (5)" << endl;
 		// Make depth signed, to cover our tails.
-		out << "int32_t DEPTH = 0;" << endl;
+		out << "__s32 DEPTH = 0;" << endl;
 		out << endl;
 	}
 
